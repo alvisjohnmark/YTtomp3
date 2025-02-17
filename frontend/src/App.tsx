@@ -4,7 +4,7 @@ function App() {
   const [url, setUrl] = useState("");
   const handleDownload = async () => {
     if (!url.trim()) return;
-    const serverUrl = `http://localhost:5000/download?url=${encodeURIComponent(url)}`;
+    const serverUrl = `${import.meta.env.VITE_REACT_BACKEND_URL}/download?url=${encodeURIComponent(url)}`;
     window.location.href = serverUrl;
   };
 
