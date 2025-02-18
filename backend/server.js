@@ -18,6 +18,7 @@ const cookiesFilePath = path.resolve(__dirname, "cookies.json");
 let cookies = [];
 try {
   cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
+  console.log("Loaded cookies:", cookies); // Log the cookies array to see if it loads correctly
 } catch (err) {
   console.error("Error reading cookies.json:", err);
 }
@@ -37,19 +38,23 @@ app.get("/download", async (req, res) => {
   res.header("Content-Disposition", 'attachment; filename="audio.mp3"');
 
   try {
-    // Pass the cookies array directly
-    const options = {
-      filter: "audioonly",
-      quality: "highestaudio",
-      requestOptions: {
-        headers: {
-          Cookie: cookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "),
+    if (Array.isArray(cookies)) {
+      // Pass the cookies array directly
+      const options = {
+        filter: "audioonly",
+        quality: "highestaudio",
+        requestOptions: {
+          headers: {
+            Cookie: cookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "),
+          },
         },
-      },
-    };
+      };
 
-    // Start the download stream and pipe to the response
-    ytdl(url, options).pipe(res);
+      // Start the download stream and pipe to the response
+      ytdl(url, options).pipe(res);
+    } else {
+      throw new Error("Cookies are not loaded correctly.");
+    }
   } catch (error) {
     console.error("Download error:", error);
     res.status(500).json({ error: "Failed to download" });
