@@ -37,15 +37,14 @@ app.get("/download", async (req, res) => {
   res.header("Content-Disposition", 'attachment; filename="audio.mp3"');
 
   try {
-    // Create the agent with cookies for the request
-    const agent = ytdl.createAgent(cookies);
-
-    // Define download options
+    // Pass the cookies array directly
     const options = {
       filter: "audioonly",
       quality: "highestaudio",
       requestOptions: {
-        agent: agent, // Attach the agent
+        headers: {
+          Cookie: cookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "),
+        },
       },
     };
 
