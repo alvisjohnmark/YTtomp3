@@ -12,10 +12,10 @@ app.use(cors());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Now use __dirname to build the path to cookies.json
+// Path to cookies.json
 const cookiesFilePath = path.resolve(__dirname, "cookies.json");
 
-let cookies = {};
+let cookies = [];
 try {
   cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
 } catch (err) {
@@ -33,21 +33,23 @@ app.get("/download", async (req, res) => {
     return res.status(400).json({ error: "Invalid YouTube URL" });
   }
 
+  // Set headers for the response
   res.header("Content-Disposition", 'attachment; filename="audio.mp3"');
 
   try {
+    // Create the agent with cookies for the request
+    const agent = ytdl.createAgent(cookies);
+
+    // Define download options
     const options = {
       filter: "audioonly",
       quality: "highestaudio",
       requestOptions: {
-        headers: {
-          Cookie: Object.entries(cookies)
-            .map(([key, value]) => `${key}=${value}`)
-            .join("; "),
-        },
+        agent: agent, // Attach the agent
       },
     };
 
+    // Start the download stream and pipe to the response
     ytdl(url, options).pipe(res);
   } catch (error) {
     console.error("Download error:", error);
