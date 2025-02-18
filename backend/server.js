@@ -2,11 +2,20 @@ import express from "express";
 import cors from "cors";
 import ytdl from "@distube/ytdl-core";
 import fs from "fs";
+import path from "path";
 
 const app = express();
 app.use(cors());
 
-const cookies = JSON.parse(fs.readFileSync("backend/cookies.json", "utf8"));
+// Correct path to cookies.json
+const cookiesFilePath = path.resolve(__dirname, "cookies.json");
+
+let cookies = {};
+try {
+  cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
+} catch (err) {
+  console.error("Error reading cookies.json:", err);
+}
 
 app.get("/download", async (req, res) => {
   let url = req.query.url;
