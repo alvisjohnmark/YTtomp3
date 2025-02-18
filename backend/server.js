@@ -6,7 +6,7 @@ import fs from "fs";
 const app = express();
 app.use(cors());
 
-const cookies = JSON.parse(fs.readFileSync("cookies.json", "utf8"));
+const cookies = JSON.parse(fs.readFileSync("./cookies.json", "utf8"));
 
 app.get("/download", async (req, res) => {
   let url = req.query.url;
